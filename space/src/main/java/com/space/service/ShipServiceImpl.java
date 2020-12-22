@@ -2,16 +2,15 @@ package com.space.service;
 
 import com.space.controller.ShipOrder;
 import com.space.mistakes.BadRequest;
+import com.space.mistakes.NotFound;
 import com.space.model.Ship;
 import com.space.model.ShipType;
 import com.space.repository.ShipRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import java.util.Calendar;
-import java.util.Comparator;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
 import java.util.stream.Collectors;
 
 @Component
@@ -102,7 +101,7 @@ public class ShipServiceImpl implements ShipService {
             ship.setUsed(false);
         }
         if ((ship.getName().isEmpty() || ship.getPlanet().isEmpty()) ||
-                (ship.getName().length()>50 || ship.getPlanet().length() > 50)) {
+                (ship.getName().length() > 50 || ship.getPlanet().length() > 50)) {
             throw new BadRequest();
         }
         if ((ship.getSpeed() < 0.01d || ship.getSpeed() > 0.99d)
@@ -117,12 +116,98 @@ public class ShipServiceImpl implements ShipService {
         cal.setTime(ship.getProdDate());
         int year = cal.get(Calendar.YEAR);
 
-        if (year < 2800 || year > 3019){
+        if (year < 2800 || year > 3019) {
             throw new BadRequest();
         }
 
         ship.setRating(getRating(ship));
         return shipRepository.save(ship);
+    }
+
+    @Override
+    public Ship findById(Long id) {
+        if (!isCorrectId(id)) {
+            throw new BadRequest();
+        }
+        if (!shipRepository.existsById(id)) {
+            throw new NotFound();
+        }
+        return shipRepository.findById(id).orElse(null);
+    }
+
+
+    @Override
+    public Ship update(Ship ship, Long id) {
+        if (!isCorrectId(id)) {
+            throw new BadRequest();
+        }
+        if (!shipRepository.existsById(id)) {
+            throw new NotFound();
+        }
+        Ship editShip = findById(id);
+        String name = ship.getName();
+        if (name != null) {
+            if (name.length() > 50 || name.isEmpty()) {
+                throw new BadRequest();
+            }
+            editShip.setName(name);
+        }
+        String planet = ship.getPlanet();
+        if (planet != null) {
+            if (planet.length() > 50 || planet.isEmpty()) {
+                throw new BadRequest();
+            }
+            editShip.setPlanet(planet);
+        }
+        ShipType shipType = ship.getShipType();
+        if (shipType != null) {
+            editShip.setShipType(shipType);
+        }
+        Date prodDate = ship.getProdDate();
+        if (prodDate != null){
+            if (prodDate.getTime() < 0){
+                throw new BadRequest();
+            }
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(prodDate);
+            int year = cal.get(Calendar.YEAR);
+
+            if (year < 2800 || year > 3019) {
+                throw new BadRequest();
+            }
+            editShip.setProdDate(prodDate);
+        }
+        Boolean isUsed = ship.getUsed();
+        if (isUsed != null){
+            editShip.setUsed(isUsed);
+        }
+        Double speed = ship.getSpeed();
+        if (speed != null){
+            if (speed < 0.01d || speed > 0.99d){
+                throw new BadRequest();
+            }
+            editShip.setSpeed(speed);
+        }
+        Integer crewsize = ship.getCrewSize();
+        if (crewsize != null){
+            if (crewsize < 1 || crewsize > 9999){
+                throw new BadRequest();
+            }
+            editShip.setCrewSize(crewsize);
+        }
+        editShip.setRating(getRating(editShip));
+        return editShip;
+    }
+
+    @Override
+    public void delete(Long id) {
+        if (!isCorrectId(id)){
+            throw new BadRequest();
+        }
+        if (!shipRepository.existsById(id)){
+            throw new NotFound();
+        }
+        shipRepository.deleteById(id);
     }
 
 
@@ -157,7 +242,11 @@ public class ShipServiceImpl implements ShipService {
         year.setTime(ship.getProdDate());
         Double yearShip = 1.0 * year.get(Calendar.YEAR);
         Double result = (80 * speed * koef) / (yearNow - yearShip + 1);
-        return (double) Math.round(result * 100)/100;
+        return (double) Math.round(result * 100) / 100;
+    }
+
+    private boolean isCorrectId(Long id) {
+        return id != null && id > 0;
     }
 
 

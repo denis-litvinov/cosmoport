@@ -77,5 +77,23 @@ public class ShipsController {
         return shipService.save(ship);
     }
 
+    @GetMapping("{id}")
+    @ResponseBody
+    public Ship findById(@PathVariable Long id){
+        return shipService.findById(id);
+    }
+
+    @PostMapping("{id}")
+    @ResponseBody
+    public Ship update(@RequestBody Ship ship, @PathVariable Long id){
+        return shipService.update(ship, id);
+    }
+
+    @DeleteMapping("{id}")
+    @ResponseBody
+    public void delete(@PathVariable Long id){
+        shipService.delete(id);
+    }
+
 
 }

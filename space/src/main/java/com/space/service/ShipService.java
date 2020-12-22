@@ -13,5 +13,8 @@ public interface ShipService {
                                  Integer minCrewSize, Integer maxCrewSize, Double minRating, Double maxRating);
     List<Ship> findShipsByPaging(List<Ship> shipList, ShipOrder order, Integer pageNumber, Integer pageSize);
     Ship save(Ship ship);
+    Ship findById(Long id);
+    Ship update(Ship ship, Long id);
+    void delete(Long id);
 
 }
