@@ -33,6 +33,7 @@ public class Ship {
     private Double rating;
 
     public Ship() {
+        //nested comment
     }
 
     public Long getId() {

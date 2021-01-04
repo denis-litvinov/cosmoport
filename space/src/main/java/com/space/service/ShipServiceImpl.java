@@ -16,9 +16,10 @@ import java.util.stream.Collectors;
 @Component
 public class ShipServiceImpl implements ShipService {
 
-    @Autowired
+
     private ShipRepository shipRepository;
 
+    @Autowired
     public ShipServiceImpl(ShipRepository shipRepository) {
         this.shipRepository = shipRepository;
     }
@@ -83,7 +84,7 @@ public class ShipServiceImpl implements ShipService {
         if (pageSize == null) {
             pageSize = 3;
         }
-        return shipList.stream().sorted(getComparator(order)).skip(pageNumber * pageSize).limit(pageSize).collect(Collectors.toList());
+        return shipList.stream().sorted(getComparator(order)).skip(pageNumber * (long) pageSize).limit(pageSize).collect(Collectors.toList());
     }
 
 
@@ -230,6 +231,7 @@ public class ShipServiceImpl implements ShipService {
             case "rating":
                 comparator = Comparator.comparing(Ship::getRating);
                 break;
+            default:
         }
         return comparator;
     }

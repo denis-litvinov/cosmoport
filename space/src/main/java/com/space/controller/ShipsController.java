@@ -1,13 +1,10 @@
 package com.space.controller;
 
-import com.space.mistakes.BadRequest;
 import com.space.model.Ship;
 import com.space.model.ShipType;
 import com.space.service.ShipServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,8 +13,13 @@ import java.util.List;
 @RequestMapping("/rest/ships")
 public class ShipsController {
 
+
+    private ShipServiceImpl shipService;
+
     @Autowired
-    private final ShipServiceImpl shipService;
+    public void setShipService(ShipServiceImpl shipService){
+        this.shipService = shipService;
+    }
 
     public ShipsController(ShipServiceImpl shipService) {
         this.shipService = shipService;
@@ -39,15 +41,12 @@ public class ShipsController {
                               @RequestParam(value = "maxRating", required = false) Double maxRating,
                               @RequestParam(value = "order", required = false) ShipOrder shipOrder,
                               @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-                              @RequestParam(value = "pageSize", required = false) Integer pageSize,
-                              Model model) {
+                              @RequestParam(value = "pageSize", required = false) Integer pageSize) {
 
 
         List<Ship> list = shipService.findShipsByParams(name, planet, shipType, after, before, isUsed, minSpeed, maxSpeed,
                 minCrewSize, maxCrewSize, minRating, maxRating);
-        List<Ship> listAfterPaging = shipService.findShipsByPaging(list, shipOrder, pageNumber, pageSize);
-        model.addAttribute("ships", listAfterPaging);
-        return listAfterPaging;
+        return shipService.findShipsByPaging(list, shipOrder, pageNumber, pageSize);
     }
 
     @GetMapping("/count")
@@ -63,12 +62,9 @@ public class ShipsController {
                                  @RequestParam(value = "minCrewSize", required = false) Integer minCrewSize,
                                  @RequestParam(value = "maxCrewSize", required = false) Integer maxCrewSize,
                                  @RequestParam(value = "minRating", required = false) Double minRating,
-                                 @RequestParam(value = "maxRating", required = false) Double maxRating,
-                                 Model model) {
-        Integer count = shipService.findShipsByParams(name, planet, shipType, after, before, isUsed,
+                                 @RequestParam(value = "maxRating", required = false) Double maxRating) {
+        return shipService.findShipsByParams(name, planet, shipType, after, before, isUsed,
                 minSpeed, maxSpeed, minCrewSize, maxCrewSize, minRating, maxRating).size();
-        model.addAttribute("count", count);
-        return count;
     }
 
     @PostMapping

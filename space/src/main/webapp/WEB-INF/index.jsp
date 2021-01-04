@@ -84,19 +84,6 @@
         </tr>
         </thead>
         <tbody id="mainTable">
-            <c:forEach var="ship" items="${ships}">
-            <tr>
-                <td scope="col"><c:out value="${ship.id}"/></td>
-                <td scope="col"><c:out value="${ship.name}"/></td>
-                <td scope="col"><c:out value="${ship.planet}"/></td>
-                <td scope="col"><c:out value="${ship.shipType}"/></td>
-                <td scope="col"><c:out value="${ship.prodDate}"/></td>
-                <td scope="col"><c:out value="${ship.used}"/></td>
-                <td scope="col"><c:out value="${ship.speed}"/></td>
-                <td scope="col"><c:out value="${ship.crewSize}"/></td>
-                <td scope="col"><c:out value="${ship.rating}"/></td>
-            </tr>
-            </c:forEach>
         </tbody>
     </table>
     <h5 id="count" style="float: right; margin-right: 20px"></h5>
